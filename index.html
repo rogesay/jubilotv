@@ -2,95 +2,120 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
   <title>Júbilo TV</title>
+
+  <!-- MODO APP -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, #0b1020 0%, #111827 100%);
+      background: black;
       color: white;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .container {
-      width: 100%;
-      max-width: 1100px;
-      text-align: center;
-    }
-    .card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-      backdrop-filter: blur(8px);
-    }
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      letter-spacing: 0.5px;
-    }
-    p {
-      margin: 0 0 24px;
-      color: #d1d5db;
-      font-size: 1.05rem;
-    }
-    .video-wrapper {
-      position: relative;
-      width: 100%;
-      padding-top: 56.25%;
-      border-radius: 16px;
+      font-family: Arial, sans-serif;
+      height: 100vh;
       overflow: hidden;
-      background: #000;
     }
-    .video-wrapper iframe {
-      position: absolute;
-      inset: 0;
+
+    .video-full {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      border: 0;
+      background: black;
     }
-    .footer {
-      margin-top: 18px;
-      font-size: 0.95rem;
-      color: #9ca3af;
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
-    .badge {
-      display: inline-block;
-      margin-bottom: 14px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.1);
-      color: #f9fafb;
-      font-size: 0.9rem;
-      border: 1px solid rgba(255,255,255,0.12);
+
+    /* BOTONES FLOTANTES */
+    .controls {
+      position: fixed;
+      bottom: 15px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .btn {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 12px 14px;
+      border-radius: 50px;
+      font-size: 14px;
+      backdrop-filter: blur(6px);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    /* OCULTAR BOTONES AUTOMATICO */
+    .hide {
+      opacity: 0;
+      transition: opacity 0.5s;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="badge">Canal en vivo</div>
-      <h1>Júbilo TV</h1>
-      <p>Bienvenido a nuestra transmisión en vivo. Disfruta de nuestra programación desde cualquier dispositivo.</p>
 
-      <div class="video-wrapper">
-        <iframe
-          src="https://iblups.com/embed/jubilotv"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-      </div>
-
-      <div class="footer">
-        © 2026 Júbilo TV · Bendición Studios
-      </div>
-    </div>
+  <div class="video-full">
+    <iframe
+      id="player"
+      src="https://iblups.com/embed/jubilotv?autoplay=1&mute=1"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
   </div>
+
+  <div id="controls" class="controls">
+    <button class="btn" onclick="recargar()">🔄</button>
+    <a href="https://iblups.com/embed/jubilotv" target="_blank">
+      <button class="btn">📺</button>
+    </a>
+  </div>
+
+  <script>
+    function recargar() {
+      let p = document.getElementById('player');
+      p.src = p.src;
+    }
+
+    // OCULTAR CONTROLES AUTOMATICO
+    let controls = document.getElementById('controls');
+    let timeout;
+
+    function showControls() {
+      controls.classList.remove('hide');
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        controls.classList.add('hide');
+      }, 3000);
+    }
+
+    document.addEventListener('touchstart', showControls);
+    document.addEventListener('mousemove', showControls);
+
+    showControls();
+
+    // PWA INSTALL (opcional)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+
 </body>
 </html>
